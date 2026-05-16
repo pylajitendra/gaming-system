@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "..\\..\\..\\Downloads\\GameService.API\\GameService.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\..\\..\\Downloads\\PlayerService.API\\PlayerService.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\..\\..\\Downloads\\ScoreService.API\\ScoreService.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\..\\..\\Downloads\\RankingService.API\\RankingService.API.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

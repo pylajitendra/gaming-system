@@ -1,0 +1,14 @@
+CREATE DATABASE PlayerDb;
+GO
+
+USE PlayerDb;
+GO
+
+CREATE TABLE Players (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(100) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+select * from Players
