@@ -1,0 +1,97 @@
+<!-- leaderboard.html -->
+
+<div class="container mt-4">
+
+  <h2>Leaderboard</h2>
+
+  <!-- SEARCH FORM -->
+
+  <form
+    [formGroup]="searchForm"
+    (ngSubmit)="search()"
+    class="mb-4"
+  >
+
+    <div class="mb-3">
+
+      <label class="form-label">
+        Game Id
+      </label>
+
+      <input
+        type="number"
+        class="form-control"
+        formControlName="gameId"
+      />
+
+      <div
+        class="text-danger mt-1"
+        *ngIf="
+          searchForm.get('gameId')?.touched &&
+          searchForm.get('gameId')?.invalid
+        "
+      >
+        Game Id is required
+      </div>
+
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="loading"
+    >
+      {{ loading ? 'Loading...' : 'Get Leaderboard' }}
+    </button>
+
+  </form>
+
+  <!-- LOADING -->
+
+  <div *ngIf="loading">
+    Loading leaderboard...
+  </div>
+
+  <!-- TABLE -->
+
+  <table
+    class="table table-bordered table-striped"
+    *ngIf="!loading && rankings.length > 0"
+  >
+
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Player Id</th>
+        <th>Game Id</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let ranking of rankings">
+
+        <td>{{ ranking.rank }}</td>
+
+        <td>{{ ranking.playerId }}</td>
+
+        <td>{{ ranking.gameId }}</td>
+
+        <td>{{ ranking.points }}</td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+  <!-- EMPTY -->
+
+  <div
+    *ngIf="!loading && rankings.length === 0"
+  >
+    No rankings found.
+  </div>
+
+</div>

@@ -1,0 +1,58 @@
+<!-- game-list.html -->
+
+<div class="container mt-4">
+
+  <h2 class="mb-3">Games</h2>
+
+  <div
+    class="alert alert-info"
+    *ngIf="loading"
+  >
+    Loading games...
+  </div>
+
+  <table
+    class="table table-bordered table-striped table-hover"
+    *ngIf="!loading && games.length > 0"
+  >
+
+    <thead class="table-dark">
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Genre</th>
+        <th>Player Id</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let game of games">
+
+        <td>{{ game.id }}</td>
+
+        <td>{{ game.name }}</td>
+
+        <td>{{ game.genre || '-' }}</td>
+
+        <td>{{ game.playerId || '-' }}</td>
+
+        <td>
+          {{ game.createdAt | date:'medium' }}
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+  <div
+    class="alert alert-warning"
+    *ngIf="!loading && games.length === 0"
+  >
+    No games found.
+  </div>
+
+</div>

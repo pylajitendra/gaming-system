@@ -1,0 +1,166 @@
+<!-- score-form.html -->
+
+<div class="container mt-4">
+
+  <h2>
+    {{ editMode ? 'Update Score' : 'Create Score' }}
+  </h2>
+
+  <form
+    [formGroup]="scoreForm"
+    (ngSubmit)="submit()"
+  >
+
+    <!-- PLAYER ID -->
+
+    <div class="mb-3">
+      <label class="form-label">
+        Player Id
+      </label>
+
+      <input
+        type="number"
+        class="form-control"
+        formControlName="playerId"
+      />
+
+      <div
+        class="text-danger mt-1"
+        *ngIf="
+          scoreForm.get('playerId')?.touched &&
+          scoreForm.get('playerId')?.invalid
+        "
+      >
+        Player Id is required
+      </div>
+    </div>
+
+    <!-- GAME ID -->
+
+    <div class="mb-3">
+      <label class="form-label">
+        Game Id
+      </label>
+
+      <input
+        type="number"
+        class="form-control"
+        formControlName="gameId"
+      />
+
+      <div
+        class="text-danger mt-1"
+        *ngIf="
+          scoreForm.get('gameId')?.touched &&
+          scoreForm.get('gameId')?.invalid
+        "
+      >
+        Game Id is required
+      </div>
+    </div>
+
+    <!-- POINTS -->
+
+    <div class="mb-3">
+      <label class="form-label">
+        Points
+      </label>
+
+      <input
+        type="number"
+        class="form-control"
+        formControlName="points"
+      />
+
+      <div
+        class="text-danger mt-1"
+        *ngIf="
+          scoreForm.get('points')?.touched &&
+          scoreForm.get('points')?.invalid
+        "
+      >
+        Points are required
+      </div>
+    </div>
+
+    <!-- BUTTON -->
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="loading"
+    >
+      {{
+        loading
+          ? 'Saving...'
+          : editMode
+            ? 'Update Score'
+            : 'Create Score'
+      }}
+    </button>
+
+    <!-- SUCCESS -->
+
+    <div
+      class="alert alert-success mt-3"
+      *ngIf="successMessage"
+    >
+      {{ successMessage }}
+    </div>
+
+  </form>
+
+  <!-- GRID -->
+
+  <hr class="my-4">
+
+  <h3>Scores List</h3>
+
+  <table class="table table-bordered table-striped">
+
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Player Id</th>
+        <th>Game Id</th>
+        <th>Points</th>
+        <th>Created At</th>
+        <th width="180">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let score of scores">
+
+        <td>{{ score.id }}</td>
+        <td>{{ score.playerId }}</td>
+        <td>{{ score.gameId }}</td>
+        <td>{{ score.points }}</td>
+        <td>{{ score.createdAt }}</td>
+
+        <td>
+
+          <button
+            class="btn btn-warning btn-sm me-2"
+            (click)="editScore(score)"
+          >
+            Edit
+          </button>
+
+          <button
+            class="btn btn-danger btn-sm"
+            (click)="deleteScore(score.id)"
+          >
+            Delete
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

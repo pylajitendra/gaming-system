@@ -1,0 +1,53 @@
+<div class="container mt-4">
+
+  <h1 class="mb-4">
+    Sports Management System
+  </h1>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded p-3">
+
+    <div class="navbar-nav">
+
+      <a
+        class="nav-link"
+        routerLink="/games"
+        routerLinkActive="active"
+      >
+        Games
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/players"
+        routerLinkActive="active"
+      >
+        Players
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/scores"
+        routerLinkActive="active"
+      >
+        Scores
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/rankings"
+        routerLinkActive="active"
+      >
+        Rankings
+      </a>
+
+    </div>
+
+  </nav>
+
+  <div class="mt-4">
+
+    <router-outlet></router-outlet>
+
+  </div>
+
+</div>
