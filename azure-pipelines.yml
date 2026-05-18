@@ -1,0 +1,47 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+# Install .NET SDK
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+# Restore backend packages
+- script: |
+    dotnet restore backend/MicroservicesSolution/GameService.API/GameService.API.sln
+    dotnet restore backend/MicroservicesSolution/PlayerService.API/PlayerService.API.sln
+    dotnet restore backend/MicroservicesSolution/RankingService.API/RankingService.API.sln
+    dotnet restore backend/MicroservicesSolution/ScoreService.API/ScoreService.API.sln
+  displayName: 'Restore .NET Packages'
+
+# Build backend services
+- script: |
+    dotnet build backend/MicroservicesSolution/GameService.API/GameService.API.sln --configuration Release
+    dotnet build backend/MicroservicesSolution/PlayerService.API/PlayerService.API.sln --configuration Release
+    dotnet build backend/MicroservicesSolution/RankingService.API/RankingService.API.sln --configuration Release
+    dotnet build backend/MicroservicesSolution/ScoreService.API/ScoreService.API.sln --configuration Release
+  displayName: 'Build .NET Microservices'
+
+# Install Node.js
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+# Install Angular dependencies
+- script: |
+    cd gaming-ui/gaming-ui
+    npm install
+  displayName: 'Install Angular Packages'
+
+# Build Angular app
+- script: |
+    cd gaming-ui/gaming-ui
+    npm run build
+  displayName: 'Build Angular App'
