@@ -1,14 +1,19 @@
 # Visual Studio
 .vs/
+FileContentIndex/
+CopilotIndices/
+DesignTimeBuild/
+
+# User files
+*.user
+*.suo
+
+# Build folders
 bin/
 obj/
 
 # Logs
 *.log
-
-# User files
-*.user
-*.suo
 
 # Rider
 .idea/
