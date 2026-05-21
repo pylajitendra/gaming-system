@@ -8,31 +8,32 @@ steps:
 
 # Install .NET SDK
 - task: UseDotNet@2
+  displayName: 'Install .NET SDK'
   inputs:
     packageType: 'sdk'
     version: '8.x'
 
 # Restore backend packages
 - script: |
-    dotnet restore backend/MicroservicesSolution/GameService.API/GameService.API.sln
-    dotnet restore backend/MicroservicesSolution/PlayerService.API/PlayerService.API.sln
-    dotnet restore backend/MicroservicesSolution/RankingService.API/RankingService.API.sln
-    dotnet restore backend/MicroservicesSolution/ScoreService.API/ScoreService.API.sln
+    dotnet restore backend/MicroservicesSolution/GameService.API/GameService.API.csproj
+    dotnet restore backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj
+    dotnet restore backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj
+    dotnet restore backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj
   displayName: 'Restore .NET Packages'
 
 # Build backend services
 - script: |
-    dotnet build backend/MicroservicesSolution/GameService.API/GameService.API.sln --configuration Release
-    dotnet build backend/MicroservicesSolution/PlayerService.API/PlayerService.API.sln --configuration Release
-    dotnet build backend/MicroservicesSolution/RankingService.API/RankingService.API.sln --configuration Release
-    dotnet build backend/MicroservicesSolution/ScoreService.API/ScoreService.API.sln --configuration Release
+    dotnet build backend/MicroservicesSolution/GameService.API/GameService.API.csproj --configuration Release
+    dotnet build backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj --configuration Release
+    dotnet build backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj --configuration Release
+    dotnet build backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj --configuration Release
   displayName: 'Build .NET Microservices'
 
 # Install Node.js
 - task: NodeTool@0
+  displayName: 'Install Node.js'
   inputs:
     versionSpec: '20.x'
-  displayName: 'Install Node.js'
 
 # Install Angular dependencies
 - script: |
@@ -45,3 +46,31 @@ steps:
     cd gaming-ui/gaming-ui
     npm run build
   displayName: 'Build Angular App'
+
+# Login to Azure Container Registry
+- task: Docker@2
+  displayName: 'Login To ACR'
+  inputs:
+    command: 'login'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+
+# Build GameService Docker image
+- task: Docker@2
+  displayName: 'Build GameService Docker Image'
+  inputs:
+    command: 'build'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'gameservice'
+    Dockerfile: 'backend/MicroservicesSolution/GameService.API/Dockerfile'
+    tags: |
+      latest
+
+# Push GameService Docker image
+- task: Docker@2
+  displayName: 'Push GameService Docker Image'
+  inputs:
+    command: 'push'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'gameservice'
+    tags: |
+      latest
