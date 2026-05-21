@@ -62,6 +62,7 @@ steps:
     containerRegistry: 'GamingSystem-ACR-ServiceConnection'
     repository: 'gameservice'
     Dockerfile: 'backend/MicroservicesSolution/GameService.API/Dockerfile'
+    buildContext: 'backend/MicroservicesSolution/GameService.API'
     tags: |
       latest
 
@@ -72,5 +73,71 @@ steps:
     command: 'push'
     containerRegistry: 'GamingSystem-ACR-ServiceConnection'
     repository: 'gameservice'
+    tags: |
+      latest
+
+# Build PlayerService Docker image
+- task: Docker@2
+  displayName: 'Build PlayerService Docker Image'
+  inputs:
+    command: 'build'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'playerservice'
+    Dockerfile: 'backend/MicroservicesSolution/PlayerService.API/Dockerfile'
+    buildContext: 'backend/MicroservicesSolution/PlayerService.API'
+    tags: |
+      latest
+
+# Push PlayerService Docker image
+- task: Docker@2
+  displayName: 'Push PlayerService Docker Image'
+  inputs:
+    command: 'push'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'playerservice'
+    tags: |
+      latest
+
+# Build RankingService Docker image
+- task: Docker@2
+  displayName: 'Build RankingService Docker Image'
+  inputs:
+    command: 'build'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'rankingservice'
+    Dockerfile: 'backend/MicroservicesSolution/RankingService.API/Dockerfile'
+    buildContext: 'backend/MicroservicesSolution/RankingService.API'
+    tags: |
+      latest
+
+# Push RankingService Docker image
+- task: Docker@2
+  displayName: 'Push RankingService Docker Image'
+  inputs:
+    command: 'push'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'rankingservice'
+    tags: |
+      latest
+
+# Build ScoreService Docker image
+- task: Docker@2
+  displayName: 'Build ScoreService Docker Image'
+  inputs:
+    command: 'build'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'scoreservice'
+    Dockerfile: 'backend/MicroservicesSolution/ScoreService.API/Dockerfile'
+    buildContext: 'backend/MicroservicesSolution/ScoreService.API'
+    tags: |
+      latest
+
+# Push ScoreService Docker image
+- task: Docker@2
+  displayName: 'Push ScoreService Docker Image'
+  inputs:
+    command: 'push'
+    containerRegistry: 'GamingSystem-ACR-ServiceConnection'
+    repository: 'scoreservice'
     tags: |
       latest
