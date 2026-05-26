@@ -31,7 +31,7 @@ public class GameController : ControllerBase
 
         _context.Games.Add(game);
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(); 
 
         return Ok(game);
     }
