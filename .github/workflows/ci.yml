@@ -5,10 +5,15 @@ on:
     branches:
       - main
 
+env:
+  ACR_NAME: gamingsystemacr.azurecr.io
+  IMAGE_TAG: latest
+
 jobs:
 
   build-and-push-images:
-    runs-on: windows-latest
+
+    runs-on: ubuntu-latest
 
     steps:
 
@@ -16,11 +21,27 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # Setup .NET
+    # Setup .NET 8
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
+    # Restore Backend Services
+    - name: Restore Backend Services
+      run: |
+        dotnet restore backend/MicroservicesSolution/GameService.API/GameService.API.csproj
+        dotnet restore backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj
+        dotnet restore backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj
+        dotnet restore backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj
+
+    # Build Backend Services
+    - name: Build Backend Services
+      run: |
+        dotnet build backend/MicroservicesSolution/GameService.API/GameService.API.csproj --configuration Release
+        dotnet build backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj --configuration Release
+        dotnet build backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj --configuration Release
+        dotnet build backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj --configuration Release
 
     # Setup Node.js
     - name: Setup Node.js
@@ -28,88 +49,87 @@ jobs:
       with:
         node-version: 20
 
-    # Restore Backend Projects
-    - name: Restore Backend Projects
-      run: |
-        dotnet restore backend/MicroservicesSolution/GameService.API/GameService.API.csproj
-        dotnet restore backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj
-        dotnet restore backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj
-        dotnet restore backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj
-
-    # Build Backend Projects
-    - name: Build Backend Projects
-      run: |
-        dotnet build backend/MicroservicesSolution/GameService.API/GameService.API.csproj --configuration Release
-        dotnet build backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj --configuration Release
-        dotnet build backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj --configuration Release
-        dotnet build backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj --configuration Release
-
     # Install Angular Dependencies
     - name: Install Angular Dependencies
       run: |
         cd gaming-ui/gaming-ui
         npm install
 
-    # Build Angular Application
-    - name: Build Angular Application
+    # Build Angular App
+    - name: Build Angular App
       run: |
         cd gaming-ui/gaming-ui
         npm run build
 
-    # Login To Azure Container Registry
-    - name: Login To Azure Container Registry
+    # Login to Azure Container Registry
+    - name: Login to Azure Container Registry
       uses: docker/login-action@v3
       with:
         registry: ${{ secrets.ACR_LOGIN_SERVER }}
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
 
-    # Build GameService Image
-    - name: Build GameService Image
+    # Build GameService Docker Image
+    - name: Build GameService Docker Image
       run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/gameservice:latest backend/MicroservicesSolution/GameService.API
+        docker build \
+        -t $ACR_NAME/gaming-system-gameservice:$IMAGE_TAG \
+        backend/MicroservicesSolution/GameService.API
 
-    # Push GameService Image
-    - name: Push GameService Image
+    # Push GameService Docker Image
+    - name: Push GameService Docker Image
       run: |
-        docker push ${{ secrets.ACR_LOGIN_SERVER }}/gameservice:latest
+        docker push \
+        $ACR_NAME/gaming-system-gameservice:$IMAGE_TAG
 
-    # Build PlayerService Image
-    - name: Build PlayerService Image
+    # Build PlayerService Docker Image
+    - name: Build PlayerService Docker Image
       run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/playerservice:latest backend/MicroservicesSolution/PlayerService.API
+        docker build \
+        -t $ACR_NAME/gaming-system-playerservice:$IMAGE_TAG \
+        backend/MicroservicesSolution/PlayerService.API
 
-    # Push PlayerService Image
-    - name: Push PlayerService Image
+    # Push PlayerService Docker Image
+    - name: Push PlayerService Docker Image
       run: |
-        docker push ${{ secrets.ACR_LOGIN_SERVER }}/playerservice:latest
+        docker push \
+        $ACR_NAME/gaming-system-playerservice:$IMAGE_TAG
 
-    # Build RankingService Image
-    - name: Build RankingService Image
+    # Build RankingService Docker Image
+    - name: Build RankingService Docker Image
       run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/rankingservice:latest backend/MicroservicesSolution/RankingService.API
+        docker build \
+        -t $ACR_NAME/gaming-system-rankingservice:$IMAGE_TAG \
+        backend/MicroservicesSolution/RankingService.API
 
-    # Push RankingService Image
-    - name: Push RankingService Image
+    # Push RankingService Docker Image
+    - name: Push RankingService Docker Image
       run: |
-        docker push ${{ secrets.ACR_LOGIN_SERVER }}/rankingservice:latest
+        docker push \
+        $ACR_NAME/gaming-system-rankingservice:$IMAGE_TAG
 
-    # Build ScoreService Image
-    - name: Build ScoreService Image
+    # Build ScoreService Docker Image
+    - name: Build ScoreService Docker Image
       run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/scoreservice:latest backend/MicroservicesSolution/ScoreService.API
+        docker build \
+        -t $ACR_NAME/gaming-system-scoreservice:$IMAGE_TAG \
+        backend/MicroservicesSolution/ScoreService.API
 
-    # Push ScoreService Image
-    - name: Push ScoreService Image
+    # Push ScoreService Docker Image
+    - name: Push ScoreService Docker Image
       run: |
-        docker push ${{ secrets.ACR_LOGIN_SERVER }}/scoreservice:latest
+        docker push \
+        $ACR_NAME/gaming-system-scoreservice:$IMAGE_TAG
 
-    # Build Angular UI Image
-    - name: Build Gaming UI Image
+    # Build Angular UI Docker Image
+    - name: Build Angular UI Docker Image
       run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/gaming-ui:latest gaming-ui/gaming-ui
+        docker build \
+        -t $ACR_NAME/gaming-system-ui:$IMAGE_TAG \
+        gaming-ui/gaming-ui
 
-    # Push Angular UI Image
-    - name: Push Gaming UI Image
+    # Push Angular UI Docker Image
+    - name: Push Angular UI Docker Image
       run: |
-        docker push ${{ secrets.ACR_LOGIN_SERVER }}/gaming-ui:latest
+        docker push \
+        $ACR_NAME/gaming-system-ui:$IMAGE_TAG
