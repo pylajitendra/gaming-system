@@ -1,0 +1,115 @@
+name: GamingSystem-CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build-and-push-images:
+    runs-on: windows-latest
+
+    steps:
+
+    # Checkout Repository
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # Setup .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # Setup Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    # Restore Backend Projects
+    - name: Restore Backend Projects
+      run: |
+        dotnet restore backend/MicroservicesSolution/GameService.API/GameService.API.csproj
+        dotnet restore backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj
+        dotnet restore backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj
+        dotnet restore backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj
+
+    # Build Backend Projects
+    - name: Build Backend Projects
+      run: |
+        dotnet build backend/MicroservicesSolution/GameService.API/GameService.API.csproj --configuration Release
+        dotnet build backend/MicroservicesSolution/PlayerService.API/PlayerService.API.csproj --configuration Release
+        dotnet build backend/MicroservicesSolution/RankingService.API/RankingService.API.csproj --configuration Release
+        dotnet build backend/MicroservicesSolution/ScoreService.API/ScoreService.API.csproj --configuration Release
+
+    # Install Angular Dependencies
+    - name: Install Angular Dependencies
+      run: |
+        cd gaming-ui/gaming-ui
+        npm install
+
+    # Build Angular Application
+    - name: Build Angular Application
+      run: |
+        cd gaming-ui/gaming-ui
+        npm run build
+
+    # Login To Azure Container Registry
+    - name: Login To Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    # Build GameService Image
+    - name: Build GameService Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/gameservice:latest backend/MicroservicesSolution/GameService.API
+
+    # Push GameService Image
+    - name: Push GameService Image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/gameservice:latest
+
+    # Build PlayerService Image
+    - name: Build PlayerService Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/playerservice:latest backend/MicroservicesSolution/PlayerService.API
+
+    # Push PlayerService Image
+    - name: Push PlayerService Image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/playerservice:latest
+
+    # Build RankingService Image
+    - name: Build RankingService Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/rankingservice:latest backend/MicroservicesSolution/RankingService.API
+
+    # Push RankingService Image
+    - name: Push RankingService Image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/rankingservice:latest
+
+    # Build ScoreService Image
+    - name: Build ScoreService Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/scoreservice:latest backend/MicroservicesSolution/ScoreService.API
+
+    # Push ScoreService Image
+    - name: Push ScoreService Image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/scoreservice:latest
+
+    # Build Angular UI Image
+    - name: Build Gaming UI Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/gaming-ui:latest gaming-ui/gaming-ui
+
+    # Push Angular UI Image
+    - name: Push Gaming UI Image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/gaming-ui:latest
