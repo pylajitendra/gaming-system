@@ -14,7 +14,7 @@ RUN npm run build
 # Runtime stage
 FROM nginx:alpine
 
-COPY --from=build /app/dist/browser /usr/share/nginx/html
+COPY --from=build /app/dist/gaming-ui /usr/share/nginx/html
 
 EXPOSE 80
 
